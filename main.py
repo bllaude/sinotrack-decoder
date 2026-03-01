@@ -1,16 +1,15 @@
-from decoder.parser import parse_packet
+import asyncio
+from decoder.server.async_stream_server import AsyncStreamServer
+from decoder.registry import PacketRegistry
+from decoder.core.dispatcher import PacketDispatcher
 
-hex_packet = (
-    "78781F12170C0A0B2D"
-    "C3A2B14F"
-    "8E4D2A90"
-    "3201A6"
-    "0001"
-    "ABCD"
-    "0D0A"
-)
+def run_server():
+    registry = PacketRegistry()
+    dispatcher = PacketDispatcher(registry)
 
-packet = bytes.fromhex(hex_packet)
+    server = AsyncStreamServer(dispatcher, port=5300)
 
-decoded = parse_packet(packet)
-print(decoded)
+    asyncio.run(server.start_tcp())
+
+if __name__ == "__main__":
+    run_server()
